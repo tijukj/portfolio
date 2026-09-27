@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #F5F4F0;
+  --foreground: #111111;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #F5F4F0;
+  color: #111111;
+}
+
+body {
+  background-color: #F5F4F0;
+  color: #111111;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Swiss typography utilities */
+::selection {
+  background-color: #111111;
+  color: #F5F4F0;
+}
+
+/* Hairline borders and grid alignment */
+.border-hairline {
+  border-width: 1px;
+  border-color: #111111;
+}
+
+.border-hairline-t {
+  border-top-width: 1px;
+  border-color: #111111;
+}
+
+.border-hairline-b {
+  border-bottom-width: 1px;
+  border-color: #111111;
+}
+
+.border-hairline-l {
+  border-left-width: 1px;
+  border-color: #111111;
+}
+
+.border-hairline-r {
+  border-right-width: 1px;
+  border-color: #111111;
+}
