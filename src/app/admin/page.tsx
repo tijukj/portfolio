@@ -56,6 +56,15 @@ export default function AdminDashboardPage() {
     setTimeout(() => setNotification(null), 4000);
   };
 
+  const safeJson = async <T,>(res: Response): Promise<T | null> => {
+    try {
+      const text = await res.text();
+      return text ? (JSON.parse(text) as T) : null;
+    } catch {
+      return null;
+    }
+  };
+
   // Fetch all admin data
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -71,13 +80,13 @@ export default function AdminDashboardPage() {
         return;
       }
 
-      const profileData = await profileRes.json();
-      const sectionsData = await sectionsRes.json();
-      const socialsData = await socialsRes.json();
+      const profileData = await safeJson<{ profile?: Profile }>(profileRes);
+      const sectionsData = await safeJson<{ sections?: Section[] }>(sectionsRes);
+      const socialsData = await safeJson<{ socialLinks?: SocialLink[] }>(socialsRes);
 
-      if (profileData.profile) setProfile(profileData.profile);
-      if (sectionsData.sections) setSections(sectionsData.sections);
-      if (socialsData.socialLinks) setSocialLinks(socialsData.socialLinks);
+      if (profileData?.profile) setProfile(profileData.profile);
+      if (sectionsData?.sections) setSections(sectionsData.sections);
+      if (socialsData?.socialLinks) setSocialLinks(socialsData.socialLinks);
     } catch {
       showNotification("Error loading dashboard data", "error");
     } finally {
@@ -112,8 +121,8 @@ export default function AdminDashboardPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(profile),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to update profile");
+      const data = await safeJson<{ error?: string }>(res);
+      if (!res.ok) throw new Error(data?.error || "Failed to update profile");
       showNotification("Profile updated successfully!");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error saving profile";
@@ -139,8 +148,8 @@ export default function AdminDashboardPage() {
         method: "POST",
         body: formData,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload failed");
+      const data = await safeJson<{ error?: string; url?: string }>(res);
+      if (!res.ok || !data?.url) throw new Error(data?.error || "Upload failed");
 
       setProfile({ ...profile, photo_url: data.url });
       showNotification("Photo uploaded! Click Save Profile to apply.");

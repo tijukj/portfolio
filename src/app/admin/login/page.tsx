@@ -22,10 +22,16 @@ export default function AdminLoginPage() {
         body: JSON.stringify({ password }),
       });
 
-      const data = await res.json();
+      let data: { error?: string; success?: boolean } = {};
+      const text = await res.text();
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        data = { error: text || "Server returned an invalid response." };
+      }
 
-      if (!res.ok) {
-        throw new Error(data.error || "Authentication failed.");
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Authentication failed. Check your admin passphrase.");
       }
 
       router.push("/admin");

@@ -13,6 +13,8 @@ const ALLOWED_MIME_TYPES = [
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();

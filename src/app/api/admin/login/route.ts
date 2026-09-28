@@ -8,6 +8,8 @@ import {
   SESSION_DURATION_MS,
 } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   try {
     const ip =

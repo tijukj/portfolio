@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { revalidatePath } from "next/cache";
 
+export const dynamic = "force-dynamic";
+
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
