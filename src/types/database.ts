@@ -1,5 +1,10 @@
 export type SectionType = 'experience' | 'project' | 'app' | 'award' | 'custom';
 
+export interface EntryLink {
+  label: string;
+  url: string;
+}
+
 export interface Section {
   id: string;
   type: SectionType;
@@ -17,7 +22,8 @@ export interface Entry {
   subtitle: string | null;
   date_range: string | null;
   description: string | null;
-  link: string | null;
+  link?: string | null; // legacy fallback
+  links?: EntryLink[] | null;
   tags: string[] | null;
   display_order: number;
   created_at?: string;

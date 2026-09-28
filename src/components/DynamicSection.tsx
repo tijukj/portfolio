@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Section } from "@/types/database";
+import { Section, Entry, EntryLink } from "@/types/database";
 import { SectionHeader } from "./SectionHeader";
-import { ArrowUpRight, Terminal, Cpu, ExternalLink, Award, Star } from "lucide-react";
+import { ArrowUpRight, Terminal, Cpu, Award, Star } from "lucide-react";
 
 interface DynamicSectionProps {
   section: Section;
@@ -32,6 +32,44 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
       default:
         return "CURATED SELECTION";
     }
+  };
+
+  const getEntryLinks = (entry: Entry): EntryLink[] => {
+    if (entry.links && Array.isArray(entry.links) && entry.links.length > 0) {
+      return entry.links;
+    }
+    if (entry.link) {
+      return [{ label: "View Resource", url: entry.link }];
+    }
+    return [];
+  };
+
+  const renderLinksRow = (entry: Entry, defaultEmptyLabel = "CASE STUDY ARCHIVE") => {
+    const links = getEntryLinks(entry);
+    if (links.length === 0) {
+      return (
+        <div className="pt-4 border-t border-[#111111] text-xs font-mono text-[#777777] uppercase">
+          {defaultEmptyLabel}
+        </div>
+      );
+    }
+
+    return (
+      <div className="pt-4 border-t border-[#111111] flex flex-wrap gap-3">
+        {links.map((linkItem, lIdx) => (
+          <a
+            key={lIdx}
+            href={linkItem.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-swiss text-[#111111] hover:underline underline-offset-4 group"
+          >
+            <span>{linkItem.label || "VIEW LINK"}</span>
+            <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          </a>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -76,6 +114,12 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                     <p className="text-sm sm:text-base text-[#333333] leading-relaxed pt-2">
                       {entry.description}
                     </p>
+                  )}
+
+                  {getEntryLinks(entry).length > 0 && (
+                    <div className="pt-2">
+                      {renderLinksRow(entry, "")}
+                    </div>
                   )}
                 </div>
 
@@ -141,21 +185,7 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                     ))}
                   </div>
 
-                  {entry.link ? (
-                    <a
-                      href={entry.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-between w-full pt-4 border-t border-[#111111] text-xs font-bold uppercase tracking-swiss text-[#111111] group"
-                    >
-                      <span>VIEW DETAILS</span>
-                      <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                    </a>
-                  ) : (
-                    <div className="pt-4 border-t border-[#111111] text-xs font-mono text-[#777777] uppercase">
-                      CASE STUDY ARCHIVE
-                    </div>
-                  )}
+                  {renderLinksRow(entry, "INTERNAL ARCHIVE")}
                 </div>
               </div>
             ))}
@@ -165,72 +195,80 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
         {/* 3. APP TYPE */}
         {section.type === "app" && (
           <div className="space-y-6">
-            {entries.map((entry, idx) => (
-              <div
-                key={entry.id}
-                className="border border-[#111111] bg-[#F5F4F0] p-6 sm:p-8 relative hover:bg-[#EFECE6] transition-colors"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 border-b border-[#111111]">
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 bg-[#111111] text-[#F5F4F0] flex items-center justify-center">
-                      <Terminal className="w-3.5 h-3.5" />
-                    </div>
-                    <span className="text-xs font-mono font-bold tracking-swiss text-[#111111]">
-                      SYS.APP-{(idx + 1).toString().padStart(2, "0")}
-                    </span>
-                    <span className="text-[10px] font-mono uppercase px-2 py-0.5 border border-[#111111] bg-[#F5F4F0] text-[#111111]">
-                      {entry.subtitle || "INTERACTIVE UTILITY"}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-4 text-xs font-mono text-[#555555]">
-                    <span className="flex items-center gap-1.5">
-                      <Cpu className="w-3.5 h-3.5" />
-                      <span>STATUS: OPERATIONAL</span>
-                    </span>
-                    {entry.date_range && <span>RELEASE: {entry.date_range}</span>}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                  <div className="lg:col-span-8">
-                    <h3 className="text-xl sm:text-3xl font-black uppercase tracking-tight text-[#111111] mb-3">
-                      {entry.title}
-                    </h3>
-                    {entry.description && (
-                      <p className="text-sm sm:text-base text-[#333333] leading-relaxed max-w-3xl">
-                        {entry.description}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="lg:col-span-4 flex flex-col justify-between items-start lg:items-end gap-4 h-full">
-                    <div className="flex flex-wrap gap-1.5 lg:justify-end">
-                      {entry.tags?.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-[10px] uppercase font-mono tracking-swiss px-2 py-1 bg-[#111111] text-[#F5F4F0]"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+            {entries.map((entry, idx) => {
+              const links = getEntryLinks(entry);
+              return (
+                <div
+                  key={entry.id}
+                  className="border border-[#111111] bg-[#F5F4F0] p-6 sm:p-8 relative hover:bg-[#EFECE6] transition-colors"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 border-b border-[#111111]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 bg-[#111111] text-[#F5F4F0] flex items-center justify-center">
+                        <Terminal className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs font-mono font-bold tracking-swiss text-[#111111]">
+                        SYS.APP-{(idx + 1).toString().padStart(2, "0")}
+                      </span>
+                      <span className="text-[10px] font-mono uppercase px-2 py-0.5 border border-[#111111] bg-[#F5F4F0] text-[#111111]">
+                        {entry.subtitle || "INTERACTIVE UTILITY"}
+                      </span>
                     </div>
 
-                    {entry.link && (
-                      <a
-                        href={entry.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-swiss text-[#111111] border border-[#111111] px-4 py-2 hover:bg-[#111111] hover:text-[#F5F4F0] transition-colors"
-                      >
-                        <span>LAUNCH APP</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    )}
+                    <div className="flex items-center gap-4 text-xs font-mono text-[#555555]">
+                      <span className="flex items-center gap-1.5">
+                        <Cpu className="w-3.5 h-3.5" />
+                        <span>STATUS: OPERATIONAL</span>
+                      </span>
+                      {entry.date_range && <span>RELEASE: {entry.date_range}</span>}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    <div className="lg:col-span-8">
+                      <h3 className="text-xl sm:text-3xl font-black uppercase tracking-tight text-[#111111] mb-3">
+                        {entry.title}
+                      </h3>
+                      {entry.description && (
+                        <p className="text-sm sm:text-base text-[#333333] leading-relaxed max-w-3xl">
+                          {entry.description}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="lg:col-span-4 flex flex-col justify-between items-start lg:items-end gap-4 h-full">
+                      <div className="flex flex-wrap gap-1.5 lg:justify-end">
+                        {entry.tags?.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-[10px] uppercase font-mono tracking-swiss px-2 py-1 bg-[#111111] text-[#F5F4F0]"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {links.length > 0 && (
+                        <div className="flex flex-wrap gap-2 lg:justify-end">
+                          {links.map((linkItem, lIdx) => (
+                            <a
+                              key={lIdx}
+                              href={linkItem.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-swiss text-[#111111] border border-[#111111] px-3 py-1.5 hover:bg-[#111111] hover:text-[#F5F4F0] transition-colors"
+                            >
+                              <span>{linkItem.label || "LAUNCH APP"}</span>
+                              <ArrowUpRight className="w-3.5 h-3.5" />
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
@@ -329,6 +367,12 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                     )}
                   </div>
 
+                  {getEntryLinks(activeAward).length > 0 && (
+                    <div className="pt-2">
+                      {renderLinksRow(activeAward, "")}
+                    </div>
+                  )}
+
                   <div className="pt-6 border-t border-[#111111] flex flex-wrap items-center justify-between gap-4">
                     <div className="flex flex-wrap gap-1.5">
                       {activeAward.tags?.map((tag) => (
@@ -353,7 +397,7 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
           </div>
         )}
 
-        {/* 5. CUSTOM TYPE (Future-proof dynamic custom sections) */}
+        {/* 5. CUSTOM TYPE */}
         {section.type === "custom" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-t border-l border-[#111111]">
             {entries.map((entry, idx) => (
@@ -400,17 +444,7 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                     ))}
                   </div>
 
-                  {entry.link && (
-                    <a
-                      href={entry.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-between w-full pt-4 border-t border-[#111111] text-xs font-bold uppercase tracking-swiss text-[#111111] group"
-                    >
-                      <span>VISIT LINK</span>
-                      <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                    </a>
-                  )}
+                  {renderLinksRow(entry, "VISIT RESOURCE")}
                 </div>
               </div>
             ))}
