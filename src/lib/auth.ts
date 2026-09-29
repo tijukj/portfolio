@@ -53,7 +53,10 @@ export function timingSafeCompare(a: string, b: string): boolean {
 
 // Create HMAC signed token
 export function createSessionToken(): string {
-  const secret = process.env.ADMIN_SESSION_SECRET || "fallback-secret-for-dev-only-32char!";
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret) {
+    throw new Error("ADMIN_SESSION_SECRET is not configured on the server.");
+  }
   const payload: SessionPayload = {
     admin: true,
     exp: Date.now() + SESSION_DURATION_MS,
@@ -71,12 +74,14 @@ export function createSessionToken(): string {
 // Verify HMAC signed token
 export function verifySessionToken(token: string | undefined): boolean {
   if (!token) return false;
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret) return false;
+
   try {
     const parts = token.split(".");
     if (parts.length !== 2) return false;
 
     const [payloadBase64, signature] = parts;
-    const secret = process.env.ADMIN_SESSION_SECRET || "fallback-secret-for-dev-only-32char!";
 
     const expectedSignature = crypto
       .createHmac("sha256", secret)

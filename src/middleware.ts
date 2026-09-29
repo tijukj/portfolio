@@ -18,12 +18,14 @@ function base64UrlToUint8Array(base64Url: string): Uint8Array {
 
 async function verifyTokenInMiddleware(token: string | undefined): Promise<boolean> {
   if (!token) return false;
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret) return false;
+
   try {
     const parts = token.split(".");
     if (parts.length !== 2) return false;
 
     const [payloadBase64, signatureBase64] = parts;
-    const secret = process.env.ADMIN_SESSION_SECRET || "fallback-secret-for-dev-only-32char!";
 
     const encoder = new TextEncoder();
     const key = await crypto.subtle.importKey(
