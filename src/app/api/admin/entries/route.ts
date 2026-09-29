@@ -10,7 +10,7 @@ function sanitizeLinks(links: unknown): EntryLink[] {
     if (item && typeof item === "object") {
       const label = typeof item.label === "string" ? item.label.trim() : "Link";
       const url = typeof item.url === "string" ? item.url.trim() : "";
-      if (url && (url.startsWith("http://") || url.startsWith("https://"))) {
+      if (url && (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("mailto:"))) {
         valid.push({ label: label || "Link", url });
       }
     }
@@ -60,7 +60,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get max display_order for this section
     const { data: maxOrderData } = await supabaseAdmin
       .from("entries")
       .select("display_order")
@@ -75,25 +74,36 @@ export async function POST(request: NextRequest) {
       ? tags.map((t: string) => String(t).trim()).filter(Boolean)
       : [];
 
-    const { data, error } = await supabaseAdmin
+    const baseInsert: Record<string, unknown> = {
+      section_id,
+      title: title.trim(),
+      subtitle: subtitle ? String(subtitle).trim() : null,
+      date_range: date_range ? String(date_range).trim() : null,
+      description: description ? String(description).trim() : null,
+      tags: sanitizedTags,
+      display_order: nextOrder,
+    };
+
+    // Try inserting with `links` (JSONB) first
+    let insertResult = await supabaseAdmin
       .from("entries")
-      .insert({
-        section_id,
-        title: title.trim(),
-        subtitle: subtitle ? String(subtitle).trim() : null,
-        date_range: date_range ? String(date_range).trim() : null,
-        description: description ? String(description).trim() : null,
-        tags: sanitizedTags,
-        links: sanitizedLinks,
-        display_order: nextOrder,
-      })
+      .insert({ ...baseInsert, links: sanitizedLinks })
       .select()
       .single();
 
-    if (error) throw error;
+    // If `links` column doesn't exist yet on live DB, fallback to legacy `link` column
+    if (insertResult.error && insertResult.error.message.includes("links")) {
+      insertResult = await supabaseAdmin
+        .from("entries")
+        .insert({ ...baseInsert, link: sanitizedLinks[0]?.url || null })
+        .select()
+        .single();
+    }
+
+    if (insertResult.error) throw insertResult.error;
 
     revalidatePath("/");
-    return NextResponse.json({ success: true, entry: data });
+    return NextResponse.json({ success: true, entry: insertResult.data });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Failed to create entry";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -119,22 +129,45 @@ export async function PUT(request: NextRequest) {
         ? tags.map((t: string) => String(t).trim()).filter(Boolean)
         : [];
     }
-    if (links !== undefined) {
-      updates.links = sanitizeLinks(links);
-    }
     if (display_order !== undefined) updates.display_order = Number(display_order);
 
-    const { data, error } = await supabaseAdmin
-      .from("entries")
-      .update(updates)
-      .eq("id", id)
-      .select()
-      .single();
+    let sanitizedLinks: EntryLink[] | null = null;
+    if (links !== undefined) {
+      sanitizedLinks = sanitizeLinks(links);
+    }
 
-    if (error) throw error;
+    let updateResult;
+    if (sanitizedLinks !== null) {
+      // Try updating with `links`
+      updateResult = await supabaseAdmin
+        .from("entries")
+        .update({ ...updates, links: sanitizedLinks })
+        .eq("id", id)
+        .select()
+        .single();
+
+      // If `links` column does not exist yet, fallback to `link`
+      if (updateResult.error && updateResult.error.message.includes("links")) {
+        updateResult = await supabaseAdmin
+          .from("entries")
+          .update({ ...updates, link: sanitizedLinks[0]?.url || null })
+          .eq("id", id)
+          .select()
+          .single();
+      }
+    } else {
+      updateResult = await supabaseAdmin
+        .from("entries")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+    }
+
+    if (updateResult.error) throw updateResult.error;
 
     revalidatePath("/");
-    return NextResponse.json({ success: true, entry: data });
+    return NextResponse.json({ success: true, entry: updateResult.data });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Failed to update entry";
     return NextResponse.json({ error: message }, { status: 500 });
