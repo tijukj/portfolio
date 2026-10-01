@@ -24,7 +24,7 @@ export function Hero({ profile, sections }: HeroProps) {
           </div>
           <div className="md:col-span-5 md:text-right flex items-center md:justify-end gap-2 text-[#111111]">
             <span className="inline-block w-2 h-2 bg-[#111111]"></span>
-            <span>SWISS CMS V2.0 • SUPABASE</span>
+            <span>PORTFOLIO / EDITION 2026</span>
           </div>
         </div>
 
@@ -115,7 +115,7 @@ export function Hero({ profile, sections }: HeroProps) {
               {/* Bottom metadata stamp */}
               <div className="pt-2 border-t border-[#111111]/30 flex justify-between items-center text-[9px] font-mono uppercase tracking-widest text-[#555555] z-10">
                 <span>SCALE: 1:1</span>
-                <span>ID: {profile.id.slice(0, 8).toUpperCase()}</span>
+                <span>PORTRAIT ARCHIVE</span>
               </div>
             </div>
           </div>

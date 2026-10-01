@@ -7,7 +7,7 @@ interface SectionHeaderProps {
   count?: number;
 }
 
-export function SectionHeader({ number, title, category, count }: SectionHeaderProps) {
+export function SectionHeader({ number, title, category }: SectionHeaderProps) {
   return (
     <div className="border-b border-[#111111] pb-6 mb-12">
       <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
@@ -26,11 +26,6 @@ export function SectionHeader({ number, title, category, count }: SectionHeaderP
             </h2>
           </div>
         </div>
-        {count !== undefined && (
-          <span className="text-xs uppercase tracking-swiss font-mono text-[#555555] sm:self-end">
-            [{count.toString().padStart(2, "0")} ENTRIES]
-          </span>
-        )}
       </div>
     </div>
   );

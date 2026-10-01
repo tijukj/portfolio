@@ -1,7 +1,7 @@
 import React from "react";
 import { appData } from "@/lib/placeholder-data";
 import { SectionHeader } from "./SectionHeader";
-import { Terminal, ExternalLink, Cpu } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 export function AppsSection() {
   return (
@@ -11,7 +11,6 @@ export function AppsSection() {
           number="03"
           category="SOFTWARE, TOOLS & UTILITIES"
           title="APPLICATIONS"
-          count={appData.length}
         />
 
         <div className="space-y-6">
@@ -20,27 +19,18 @@ export function AppsSection() {
               key={app.id}
               className="border border-[#111111] bg-[#F5F4F0] p-6 sm:p-8 relative hover:bg-[#EFECE6] transition-colors"
             >
-              {/* Technical top bar */}
               <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 border-b border-[#111111]">
                 <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 bg-[#111111] text-[#F5F4F0] flex items-center justify-center">
-                    <Terminal className="w-3.5 h-3.5" />
-                  </div>
                   <span className="text-xs font-mono font-bold tracking-swiss text-[#111111]">
-                    SYS.APP-{(idx + 1).toString().padStart(2, "0")}
-                  </span>
-                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 border border-[#111111] bg-[#F5F4F0] text-[#111111]">
-                    {app.subtitle || "INTERACTIVE UTILITY"}
+                    {(idx + 1).toString().padStart(2, "0")} {app.subtitle ? `/ ${app.subtitle}` : ""}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-4 text-xs font-mono text-[#555555]">
-                  <span className="flex items-center gap-1.5">
-                    <Cpu className="w-3.5 h-3.5" />
-                    <span>STATUS: OPERATIONAL</span>
-                  </span>
-                  <span>RELEASE: {app.date}</span>
-                </div>
+                {app.date && (
+                  <div className="text-xs font-mono text-[#555555]">
+                    <span>RELEASE: {app.date}</span>
+                  </div>
+                )}
               </div>
 
               {/* Main Content Grid */}

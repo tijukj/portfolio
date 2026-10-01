@@ -129,12 +129,12 @@ export function Footer({ email, socialLinks, sectionIndex }: FooterProps) {
               </div>
             </div>
 
-            <div className="p-4 border border-[#111111] text-xs font-mono text-[#555555] flex items-center justify-between">
+            <div className="p-4 border border-[#111111] text-xs font-mono text-[#555555] flex flex-wrap items-center justify-between gap-4">
               <span>TIMEZONE: UTC+05:30 (IST)</span>
-              <span className="inline-flex items-center gap-1.5 text-[#111111] font-bold">
-                <span className="w-2 h-2 bg-[#111111]"></span>
-                ONLINE
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-[#111111] inline-block"></span>
+                <span className="text-[#111111] font-bold tracking-wider">ONLINE</span>
+              </div>
             </div>
           </div>
         </div>
@@ -153,8 +153,7 @@ export function Footer({ email, socialLinks, sectionIndex }: FooterProps) {
             <span className="ml-3 text-[#777777]">ALL RIGHTS RESERVED</span>
           </div>
 
-          <div className="flex items-center gap-6">
-            <span>SWISS TYPOGRAPHIC CMS</span>
+          <div>
             <a
               href="#"
               className="text-[#111111] font-bold hover:underline"

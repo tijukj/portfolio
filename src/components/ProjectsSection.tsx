@@ -11,7 +11,6 @@ export function ProjectsSection() {
           number="02"
           category="SELECTED INITIATIVES & RESEARCH"
           title="PROJECTS"
-          count={projectData.length}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-t border-l border-[#111111]">
@@ -24,7 +23,7 @@ export function ProjectsSection() {
                 {/* Header info */}
                 <div className="flex items-center justify-between pb-6 mb-6 border-b border-[#111111]/30">
                   <span className="text-xs font-mono font-bold tracking-swiss text-[#555555]">
-                    [PROJ-{(idx + 1).toString().padStart(2, "0")}]
+                    {(idx + 1).toString().padStart(2, "0")}
                   </span>
                   <span className="text-xs font-mono text-[#555555]">{project.date}</span>
                 </div>
@@ -58,7 +57,7 @@ export function ProjectsSection() {
                 </div>
 
                 {/* External link action */}
-                {project.link ? (
+                {project.link && (
                   <a
                     href={project.link}
                     target="_blank"
@@ -68,10 +67,6 @@ export function ProjectsSection() {
                     <span>VIEW CASE STUDY</span>
                     <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                   </a>
-                ) : (
-                  <div className="pt-4 border-t border-[#111111] text-xs font-mono text-[#777777] uppercase">
-                    INTERNAL RESEARCH
-                  </div>
                 )}
               </div>
             </div>

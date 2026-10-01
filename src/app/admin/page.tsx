@@ -900,10 +900,15 @@ export default function AdminDashboardPage() {
                                   )}
 
                                   {/* Links count */}
-                                  <div className="flex items-center gap-2 pt-1">
+                                  <div className="flex flex-wrap items-center gap-2 pt-1">
                                     {entry.links && entry.links.length > 0 && (
                                       <span className="text-[9px] font-mono uppercase bg-[#111111] text-[#F5F4F0] px-1.5 py-0.5">
                                         {entry.links.length} LINK(S)
+                                      </span>
+                                    )}
+                                    {((entry.links && entry.links.some((l) => l.url?.includes("example.com"))) || (entry.link && entry.link.includes("example.com"))) && (
+                                      <span className="text-[9px] font-mono uppercase bg-[#111111] text-[#F5F4F0] border border-dashed border-red-500 px-1.5 py-0.5 font-bold">
+                                        ⚠ PLACEHOLDER URL
                                       </span>
                                     )}
                                     {entry.tags?.map((t) => (
@@ -1267,42 +1272,49 @@ export default function AdminDashboardPage() {
 
                 <div className="space-y-2">
                   {(editingEntry.linksArray || []).map((linkItem, lIdx) => (
-                    <div key={lIdx} className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        placeholder="Label (e.g. GDrive / GitHub / Demo)"
-                        value={linkItem.label}
-                        onChange={(e) => {
-                          const updated = [...(editingEntry.linksArray || [])];
-                          updated[lIdx].label = e.target.value;
-                          setEditingEntry({ ...editingEntry, linksArray: updated });
-                        }}
-                        className="w-1/3 px-2 py-1.5 bg-transparent border border-[#111111] text-xs font-mono"
-                      />
-                      <input
-                        type="url"
-                        placeholder="https://example.com/..."
-                        value={linkItem.url}
-                        onChange={(e) => {
-                          const updated = [...(editingEntry.linksArray || [])];
-                          updated[lIdx].url = e.target.value;
-                          setEditingEntry({ ...editingEntry, linksArray: updated });
-                        }}
-                        className="w-2/3 px-2 py-1.5 bg-transparent border border-[#111111] text-xs font-mono"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const updated = [...(editingEntry.linksArray || [])].filter(
-                            (_, idx) => idx !== lIdx
-                          );
-                          setEditingEntry({ ...editingEntry, linksArray: updated });
-                        }}
-                        className="p-1.5 border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F5F4F0]"
-                        title="Remove link"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
+                    <div key={lIdx} className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          placeholder="Label (e.g. GDrive / GitHub / Demo)"
+                          value={linkItem.label}
+                          onChange={(e) => {
+                            const updated = [...(editingEntry.linksArray || [])];
+                            updated[lIdx].label = e.target.value;
+                            setEditingEntry({ ...editingEntry, linksArray: updated });
+                          }}
+                          className="w-1/3 px-2 py-1.5 bg-transparent border border-[#111111] text-xs font-mono"
+                        />
+                        <input
+                          type="url"
+                          placeholder="https://..."
+                          value={linkItem.url}
+                          onChange={(e) => {
+                            const updated = [...(editingEntry.linksArray || [])];
+                            updated[lIdx].url = e.target.value;
+                            setEditingEntry({ ...editingEntry, linksArray: updated });
+                          }}
+                          className="w-2/3 px-2 py-1.5 bg-transparent border border-[#111111] text-xs font-mono"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = [...(editingEntry.linksArray || [])].filter(
+                              (_, idx) => idx !== lIdx
+                            );
+                            setEditingEntry({ ...editingEntry, linksArray: updated });
+                          }}
+                          className="p-1.5 border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F5F4F0]"
+                          title="Remove link"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                      {linkItem.url && linkItem.url.includes("example.com") && (
+                        <p className="text-[10px] font-mono text-red-600 pl-1">
+                          ⚠ Placeholder URL (example.com) — please replace with a real link.
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>

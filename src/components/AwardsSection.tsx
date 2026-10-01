@@ -51,7 +51,7 @@ export function AwardsSection() {
                         isSelected ? "text-[#CCCCCC]" : "text-[#555555]"
                       }`}
                     >
-                      [AWD-0{idx + 1}] • {award.date}
+                      {(idx + 1).toString().padStart(2, "0")} • {award.date}
                     </span>
                     {isFellowship && (
                       <span
@@ -121,10 +121,6 @@ export function AwardsSection() {
                       </span>
                     ))}
                   </div>
-
-                  <span className="text-[11px] font-mono text-[#777777] uppercase">
-                    RECORD ID: {activeAward.id.toUpperCase()}
-                  </span>
                 </div>
               </div>
             )}

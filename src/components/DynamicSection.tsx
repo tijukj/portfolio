@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Section, Entry, EntryLink } from "@/types/database";
 import { SectionHeader } from "./SectionHeader";
-import { ArrowUpRight, Terminal, Cpu, Award, Star } from "lucide-react";
+import { ArrowUpRight, Award, Star } from "lucide-react";
 
 interface DynamicSectionProps {
   section: Section;
@@ -44,9 +44,10 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
     return [];
   };
 
-  const renderLinksRow = (entry: Entry, defaultEmptyLabel = "CASE STUDY ARCHIVE") => {
+  const renderLinksRow = (entry: Entry, defaultEmptyLabel = "") => {
     const links = getEntryLinks(entry);
     if (links.length === 0) {
+      if (!defaultEmptyLabel) return null;
       return (
         <div className="pt-4 border-t border-[#111111] text-xs font-mono text-[#777777] uppercase">
           {defaultEmptyLabel}
@@ -79,7 +80,6 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
           number={numberStr}
           category={getCategoryLabel(section.type)}
           title={section.title}
-          count={entries.length}
         />
 
         {/* 1. EXPERIENCE TYPE */}
@@ -111,7 +111,7 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                     </p>
                   )}
                   {entry.description && (
-                    <p className="text-sm sm:text-base text-[#333333] leading-relaxed pt-2">
+                    <p className="text-sm sm:text-base text-[#333333] leading-relaxed pt-2 whitespace-pre-line">
                       {entry.description}
                     </p>
                   )}
@@ -149,7 +149,7 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                 <div>
                   <div className="flex items-center justify-between pb-6 mb-6 border-b border-[#111111]/30">
                     <span className="text-xs font-mono font-bold tracking-swiss text-[#555555]">
-                      [PROJ-{(idx + 1).toString().padStart(2, "0")}]
+                      {(idx + 1).toString().padStart(2, "0")}
                     </span>
                     {entry.date_range && (
                       <span className="text-xs font-mono text-[#555555]">{entry.date_range}</span>
@@ -167,7 +167,7 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                   </h3>
 
                   {entry.description && (
-                    <p className="text-sm text-[#333333] leading-relaxed mb-6">
+                    <p className="text-sm text-[#333333] leading-relaxed mb-6 whitespace-pre-line">
                       {entry.description}
                     </p>
                   )}
@@ -185,7 +185,7 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                     ))}
                   </div>
 
-                  {renderLinksRow(entry, "INTERNAL ARCHIVE")}
+                  {renderLinksRow(entry, "")}
                 </div>
               </div>
             ))}
@@ -204,24 +204,16 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 border-b border-[#111111]">
                     <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 bg-[#111111] text-[#F5F4F0] flex items-center justify-center">
-                        <Terminal className="w-3.5 h-3.5" />
-                      </div>
                       <span className="text-xs font-mono font-bold tracking-swiss text-[#111111]">
-                        SYS.APP-{(idx + 1).toString().padStart(2, "0")}
-                      </span>
-                      <span className="text-[10px] font-mono uppercase px-2 py-0.5 border border-[#111111] bg-[#F5F4F0] text-[#111111]">
-                        {entry.subtitle || "INTERACTIVE UTILITY"}
+                        {(idx + 1).toString().padStart(2, "0")} {entry.subtitle ? `/ ${entry.subtitle}` : ""}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-4 text-xs font-mono text-[#555555]">
-                      <span className="flex items-center gap-1.5">
-                        <Cpu className="w-3.5 h-3.5" />
-                        <span>STATUS: OPERATIONAL</span>
-                      </span>
-                      {entry.date_range && <span>RELEASE: {entry.date_range}</span>}
-                    </div>
+                    {entry.date_range && (
+                      <div className="text-xs font-mono text-[#555555]">
+                        <span>RELEASE: {entry.date_range}</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -230,7 +222,7 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                         {entry.title}
                       </h3>
                       {entry.description && (
-                        <p className="text-sm sm:text-base text-[#333333] leading-relaxed max-w-3xl">
+                        <p className="text-sm sm:text-base text-[#333333] leading-relaxed max-w-3xl whitespace-pre-line">
                           {entry.description}
                         </p>
                       )}
@@ -303,7 +295,7 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                           isSelected ? "text-[#CCCCCC]" : "text-[#555555]"
                         }`}
                       >
-                        [AWD-{(idx + 1).toString().padStart(2, "0")}] {award.date_range ? `• ${award.date_range}` : ""}
+                        {(idx + 1).toString().padStart(2, "0")} {award.date_range ? `• ${award.date_range}` : ""}
                       </span>
                       {isFellowship && (
                         <span
@@ -361,7 +353,7 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                       {activeAward.title}
                     </h3>
                     {activeAward.description && (
-                      <p className="text-base sm:text-lg text-[#333333] leading-relaxed">
+                      <p className="text-base sm:text-lg text-[#333333] leading-relaxed whitespace-pre-line">
                         {activeAward.description}
                       </p>
                     )}
@@ -384,10 +376,6 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                         </span>
                       ))}
                     </div>
-
-                    <span className="text-[11px] font-mono text-[#777777] uppercase">
-                      ID: {activeAward.id.slice(0, 8)}
-                    </span>
                   </div>
                 </div>
               ) : (
@@ -408,7 +396,7 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                 <div>
                   <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#111111]/30">
                     <span className="text-xs font-mono font-bold tracking-swiss text-[#555555]">
-                      [CUST-{(idx + 1).toString().padStart(2, "0")}]
+                      {(idx + 1).toString().padStart(2, "0")}
                     </span>
                     {entry.date_range && (
                       <span className="text-xs font-mono text-[#555555]">{entry.date_range}</span>
@@ -426,7 +414,7 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                   </h3>
 
                   {entry.description && (
-                    <p className="text-sm text-[#333333] leading-relaxed mb-6">
+                    <p className="text-sm text-[#333333] leading-relaxed mb-6 whitespace-pre-line">
                       {entry.description}
                     </p>
                   )}
@@ -444,7 +432,7 @@ export function DynamicSection({ section, index }: DynamicSectionProps) {
                     ))}
                   </div>
 
-                  {renderLinksRow(entry, "VISIT RESOURCE")}
+                  {renderLinksRow(entry, "")}
                 </div>
               </div>
             ))}

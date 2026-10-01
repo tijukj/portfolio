@@ -67,9 +67,9 @@ export function Header({ name, sections }: HeaderProps) {
                       : "text-[#555555] hover:text-[#111111]"
                   }`}
                 >
-                  <span className="text-[10px] text-[#888888]">{item.index}</span>
-                  <span className="hidden md:inline">{item.label}</span>
-                  <span className="md:hidden">{item.label.slice(0, 3)}</span>
+                  <span className="text-[10px] text-[#888888] font-mono">{item.index}</span>
+                  <span className="hidden sm:inline">{item.label}</span>
+                  <span className="inline sm:hidden">{item.label.slice(0, 3)}</span>
                 </a>
               );
             })}

@@ -10,7 +10,6 @@ export function ExperienceSection() {
           number="01"
           category="PROFESSIONAL TRAJECTORY"
           title="EXPERIENCE"
-          count={experienceData.length}
         />
 
         <div className="divide-y divide-[#111111] border-y border-[#111111]">
